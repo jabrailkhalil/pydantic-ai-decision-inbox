@@ -2,6 +2,7 @@ import hashlib
 import json
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from threading import Barrier
 
 import pytest
@@ -201,14 +202,14 @@ def test_explicit_retry_rechecks_fresh_execution_authorization(
 
 def test_reconciliation_requires_evidence_in_executor_ledger(fixture: Fixture) -> None:
     receipt = fixture.executor.execute(fixture.request.binding)
-    with fixture.executor.connect() as db:
+    with closing(fixture.executor.connect()) as db:
         db.execute("UPDATE effects SET amount=99 WHERE id=?", (receipt.effect_id,))
     with pytest.raises(BindingMismatch):
         fixture.executor.lookup(fixture.request.binding)
 
 
 def test_executor_receipt_failure_rolls_back_the_effect(fixture: Fixture) -> None:
-    with fixture.executor.connect() as db:
+    with closing(fixture.executor.connect()) as db:
         db.execute(
             "CREATE TRIGGER reject_receipt BEFORE INSERT ON receipts "
             "BEGIN SELECT RAISE(ABORT, 'injected receipt failure'); END"
@@ -217,7 +218,7 @@ def test_executor_receipt_failure_rolls_back_the_effect(fixture: Fixture) -> Non
         fixture.executor.execute(fixture.request.binding)
     assert fixture.executor.effect_count() == 0
     assert fixture.executor.lookup(fixture.request.binding) is None
-    with fixture.executor.connect() as db:
+    with closing(fixture.executor.connect()) as db:
         db.execute("DROP TRIGGER reject_receipt")
     fixture.executor.execute(fixture.request.binding)
     assert fixture.executor.effect_count() == 1
