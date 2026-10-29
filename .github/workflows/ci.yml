@@ -18,7 +18,7 @@ jobs:
       - run: python -m ruff check src scripts tests/python
       - run: python -m ruff format --check src scripts tests/python
       - run: python -m mypy src
-      - run: python -m pytest -q --cov=pydantic_ai_decision_inbox --cov-branch --cov-report=term-missing
+      - run: python -m pytest -q -W error::ResourceWarning -W error::pytest.PytestUnraisableExceptionWarning --cov=pydantic_ai_decision_inbox --cov-branch --cov-report=term-missing
       - run: python -m build
   unit:
     runs-on: ubuntu-latest
