@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f4ef" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'"
+    />
+    <title>Deferred approvals across a crash · PydanticAI decision lab</title>
+  </head>
+  <body>
+    <header>
+      <a href="./">Decision inbox lab</a
+      ><span>An independent PydanticAI experiment</span>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">DECISION → DISPATCH → RECEIPT</p>
+        <h1>Deferred approvals across a crash.</h1>
+        <p>
+          Follow what was approved, what may have executed, and what the
+          executor can actually confirm.
+        </p>
+      </section>
+      <p class="mode" id="mode">
+        Recorded Python runs · replay changes only the view
+      </p>
+      <p class="scope">
+        The hosted page shows captured runs of the included Python lab. The
+        local server can execute them again. FunctionModel makes no provider
+        requests.
+      </p>
+      <div class="chooser">
+        <label for="scenario">Scenario</label
+        ><select id="scenario" disabled></select
+        ><button id="run" disabled>Replay captured run</button>
+      </div>
+      <p id="status" role="status"></p>
+      <p id="error" role="alert"></p>
+      <div id="app" aria-busy="true"><p>Loading recorded runs…</p></div>
+      <noscript>This lab viewer requires JavaScript.</noscript>
+    </main>
+    <footer>
+      Independent prototype by
+      <a href="https://github.com/jabrailkhalil/pydantic-ai-decision-inbox"
+        >jabrailkhalil</a
+      >. The executor is a local test ledger; these results do not establish
+      exactly-once behavior for external services.
+    </footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

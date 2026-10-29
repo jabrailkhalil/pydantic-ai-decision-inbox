@@ -1,0 +1,742 @@
+{
+  "version": 1,
+  "source": "Recorded executions of the included Python lab",
+  "reports": [
+    {
+      "id": "happy",
+      "title": "Approval and duplicate delivery",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The decision and queued outbox item are committed",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The duplicate decision returned the saved record",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "A new SDK run received the recorded tool result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "Repeated delivery returned the saved completed result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "same_key_replay_did_not_change_state": true,
+        "one_effect": true,
+        "same_completed_run_on_replay": true,
+        "new_run_same_conversation": true
+      },
+      "crash_exit_codes": [],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "denied",
+      "title": "A denied call has no effect",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The denial was saved",
+          "decision": "denied",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The SDK received the denial",
+          "decision": "denied",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": true,
+          "observed_effects": 0,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "no_effect_or_receipt": true
+      },
+      "crash_exit_codes": [],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "after_decision",
+      "title": "Crash after the decision commits",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The decision and queued outbox item are committed",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "A new SDK run received the recorded tool result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "Repeated delivery returned the saved completed result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "one_effect": true,
+        "same_completed_run_on_replay": true,
+        "new_run_same_conversation": true
+      },
+      "crash_exit_codes": [73],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "after_claim",
+      "title": "Crash before dispatch; reclaim with a new token",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The decision and queued outbox item are committed",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The worker exited abruptly",
+          "decision": "approved",
+          "execution": "claimed",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": "Injected exit code: 73"
+        },
+        {
+          "title": "A new SDK run received the recorded tool result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "Repeated delivery returned the saved completed result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "one_effect": true,
+        "same_completed_run_on_replay": true,
+        "new_run_same_conversation": true
+      },
+      "crash_exit_codes": [73],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "after_dispatch",
+      "title": "Dispatch uncertainty before an observed effect",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The decision and queued outbox item are committed",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The worker exited abruptly",
+          "decision": "approved",
+          "execution": "dispatched",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": "Injected exit code: 73"
+        },
+        {
+          "title": "Expired dispatched attempt: UNKNOWN; blind retry blocked",
+          "decision": "approved",
+          "execution": "unknown",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "No receipt found; absence alone cannot authorize retry",
+          "decision": "approved",
+          "execution": "unknown",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "An explicit retry used the fixture's atomic idempotency key",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": false,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "A new SDK run received the recorded tool result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "Repeated delivery returned the saved completed result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "uncertainty_did_not_repeat_effect": true,
+        "one_effect": true,
+        "same_completed_run_on_replay": true,
+        "new_run_same_conversation": true
+      },
+      "crash_exit_codes": [73],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "after_effect_opaque",
+      "title": "Effect committed; no trusted reconciliation",
+      "mode": "fixture-opaque",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The decision and queued outbox item are committed",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The worker exited abruptly",
+          "decision": "approved",
+          "execution": "dispatched",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 1,
+          "note": "Injected exit code: 73"
+        },
+        {
+          "title": "Expired dispatched attempt: UNKNOWN; blind retry blocked",
+          "decision": "approved",
+          "execution": "unknown",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 1,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "uncertainty_did_not_repeat_effect": true,
+        "unknown_stays_without_receipt": true,
+        "one_observed_effect": true
+      },
+      "crash_exit_codes": [73],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "after_effect_reconcile",
+      "title": "Recover a committed effect through a trusted receipt",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The decision and queued outbox item are committed",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The worker exited abruptly",
+          "decision": "approved",
+          "execution": "dispatched",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 1,
+          "note": "Injected exit code: 73"
+        },
+        {
+          "title": "Expired dispatched attempt: UNKNOWN; blind retry blocked",
+          "decision": "approved",
+          "execution": "unknown",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "The executor supplied a matching committed receipt",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": false,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "A new SDK run received the recorded tool result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "Repeated delivery returned the saved completed result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "uncertainty_did_not_repeat_effect": true,
+        "one_effect": true,
+        "same_completed_run_on_replay": true,
+        "new_run_same_conversation": true
+      },
+      "crash_exit_codes": [73],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "after_receipt",
+      "title": "Receipt committed; agent continuation interrupted",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The decision and queued outbox item are committed",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The worker exited abruptly",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": false,
+          "observed_effects": 1,
+          "note": "Injected exit code: 73"
+        },
+        {
+          "title": "A new SDK run received the recorded tool result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        },
+        {
+          "title": "Repeated delivery returned the saved completed result",
+          "decision": "approved",
+          "execution": "succeeded",
+          "has_receipt": true,
+          "agent_finished": true,
+          "observed_effects": 1,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "one_effect": true,
+        "same_completed_run_on_replay": true,
+        "new_run_same_conversation": true
+      },
+      "crash_exit_codes": [73],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "stale_args",
+      "title": "Changed arguments cannot inherit approval",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The changed argument digest was rejected",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "original_call_still_pending": true,
+        "no_effect": true
+      },
+      "crash_exit_codes": [],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "stale_policy",
+      "title": "A changed policy blocks dispatch",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The original policy allowed the decision",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The live policy version blocked execution",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "no_effect": true
+      },
+      "crash_exit_codes": [],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "expired",
+      "title": "An expired request cannot be approved",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The approval attempt was rejected at expiry",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        }
+      ],
+      "checks": {
+        "no_effect": true,
+        "decision_still_pending": true
+      },
+      "crash_exit_codes": [],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "reviewer_race",
+      "title": "Two reviewers; one committed decision",
+      "mode": "fixture-idempotent",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "Concurrent approve/deny requests finished",
+          "decision": "approved",
+          "execution": "queued",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": "Conflict, approved"
+        }
+      ],
+      "checks": {
+        "one_winner_one_conflict": true,
+        "one_saved_decision": true,
+        "approval_is_not_execution": true
+      },
+      "crash_exit_codes": [],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    },
+    {
+      "id": "negative_control",
+      "title": "Negative control: approval alone repeats the effect",
+      "mode": "fixture-opaque",
+      "sdk_version": "2.63.0",
+      "steps": [
+        {
+          "title": "The SDK returned a pending approval",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 0,
+          "note": ""
+        },
+        {
+          "title": "The same approval was delivered twice to an unprotected tool",
+          "decision": "pending",
+          "execution": "none",
+          "has_receipt": false,
+          "agent_finished": false,
+          "observed_effects": 2,
+          "note": "This is expected SDK behavior, not a claim of a framework bug."
+        }
+      ],
+      "checks": {
+        "unprotected_effect_was_repeated": true
+      },
+      "crash_exit_codes": [],
+      "assumptions": [
+        "FunctionModel: no provider requests.",
+        "Two separate local SQLite databases stand in for the inbox and executor.",
+        "Lease time uses a controlled logical clock; injected process exits are real.",
+        "Effect counts come from the test observer, not inbox execution receipts.",
+        "Executor idempotency and reconciliation are fixture guarantees only."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+node_modules
+dist
+.venv*
+demo-work
+package-lock.json
+test-results
+test-results-live
+playwright-report
+htmlcov

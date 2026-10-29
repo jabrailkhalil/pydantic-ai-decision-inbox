@@ -1,0 +1,25 @@
+{
+  "name": "pydantic-ai-decision-inbox",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc --noEmit && vite build --base=./",
+    "preview": "vite preview --host 127.0.0.1 --port 4175 --strictPort",
+    "check": "tsc --noEmit && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:browser": "playwright test",
+    "test:live": "playwright test --config playwright.live.config.ts"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "prettier": "^3.9.10",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
+  }
+}
