@@ -75,6 +75,17 @@ dispatch. A reclaimed token fences the old worker before that boundary.
 After dispatch, lease expiry cannot prove the worker stopped or undo an effect.
 I preserve valid late receipts rather than discard them because a lease expired.
 
+### Manual outcome resolution
+
+I have not implemented manual outcome resolution after dispatch or a UI for
+comparing a manual outcome with a late receipt. A reviewer's approval or denial
+is separate from execution evidence. A matching late receipt can move
+`dispatched` or `unknown` to `succeeded`. A different receipt for a request that
+already has one is rejected, and a second reviewer decision cannot replace the
+saved decision.
+
+### Agent continuation
+
 I resume through a **new** SDK run with the original server-held history and
 `DeferredToolResults(approvals={call_id: ToolApproved()})`. The tool checks its
 effective arguments and identity again. `override_args` cannot inherit approval
