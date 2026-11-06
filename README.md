@@ -106,6 +106,14 @@ stays `unknown`. The harness may observe one effect, but that count is not an
 inbox receipt. An absent lookup result also does not prove an in-flight worker
 cannot commit later.
 
+Following [salahmakboul's delayed-lookup and lease fixture](https://github.com/jabrailkhalil/pydantic-ai-decision-inbox/issues/1#issuecomment-6609335276),
+I added a deterministic delayed-visibility check against the real inbox and SDK.
+The executor commits an effect, loses its response and hides the receipt behind
+an explicit event. Two absent reconciliations must keep the request `unknown`
+and block ordinary resume. Opening visibility completes with the original
+receipt, one execute call and one effect. The existing synchronized late-worker
+tests cover lease expiry after dispatch and explicit idempotent retry separately.
+
 I do **not** infer exactly-once behavior for an arbitrary provider from this
 fixture. A deployment must supply and verify its executor's idempotency and
 reconciliation contract. The operation key scopes one request envelope, not an

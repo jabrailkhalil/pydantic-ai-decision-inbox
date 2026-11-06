@@ -3,7 +3,7 @@ import json
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import closing
-from threading import Barrier
+from threading import Barrier, Event
 
 import pytest
 from conftest import Fixture
@@ -151,6 +151,58 @@ def test_idempotent_executor_reuses_the_same_receipt(fixture: Fixture) -> None:
     first = fixture.executor.execute(fixture.request.binding)
     second = fixture.executor.execute(fixture.request.binding)
     assert first == second and fixture.executor.effect_count() == 1
+
+
+def test_delayed_lookup_stays_unknown_until_receipt_is_visible(
+    fixture: Fixture,
+) -> None:
+    visible = Event()
+
+    class DelayedLookup(LedgerExecutor):
+        execute_calls = 0
+        lookup_calls = 0
+
+        def execute(self, binding: Binding) -> Receipt:
+            self.execute_calls += 1
+            super().execute(binding)
+            raise OSError("Response lost after the provider committed")
+
+        def lookup(self, binding: Binding) -> Receipt | None:
+            self.lookup_calls += 1
+            if not visible.is_set():
+                return None
+            return super().lookup(binding)
+
+    executor = DelayedLookup(fixture.executor.path)
+    fixture.approve()
+    with pytest.raises(UnknownOutcome):
+        resume(fixture.inbox, executor, "request-1")
+    assert executor.execute_calls == 1
+    assert fixture.executor.effect_count() == 1
+    committed_receipt = fixture.executor.lookup(fixture.request.binding)
+    assert committed_receipt is not None
+
+    # The provider has committed, but its status endpoint cannot see the receipt.
+    # An absent lookup must not grant another dispatch or establish an outcome.
+    for _ in range(2):
+        with pytest.raises(UnknownOutcome):
+            reconcile(fixture.inbox, executor, "request-1")
+        with pytest.raises(UnknownOutcome):
+            resume(fixture.inbox, executor, "request-1")
+        request = fixture.inbox.get("request-1")
+        assert request.execution == "unknown" and request.receipt is None
+        assert executor.execute_calls == 1
+        assert fixture.executor.effect_count() == 1
+    assert executor.lookup_calls == 2
+
+    visible.set()
+    reconciled = reconcile(fixture.inbox, executor, "request-1")
+    assert reconciled.execution == "succeeded"
+    assert reconciled.receipt == committed_receipt
+    completed = resume(fixture.inbox, executor, "request-1")
+    assert completed.output == "Tool result received by the agent."
+    assert executor.execute_calls == 1 and executor.lookup_calls == 3
+    assert fixture.executor.effect_count() == 1
 
 
 def test_model_text_cannot_establish_a_tool_outcome(fixture: Fixture) -> None:
